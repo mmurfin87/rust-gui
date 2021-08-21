@@ -58,6 +58,6 @@ impl Element for Button
 			drawW983dBox(&mut draw_context.canvas, &theme.window.border, theme.window.backgroundColor, &self.area);
 		}
 		let hDiff2: i32 = self.area.siz.y - theme.font.points as i32;
-		writeLeftAligned(&mut draw_context.canvas, &draw_context.texture_creator, &draw_context.font, &Color::BLACK, &XY {x: self.area.pos.x + hDiff2, y: self.area.pos.y - (theme.window.border.top.inner.width + theme.window.border.top.outer.width) as i32 + (hDiff2 / 2)}, (self.area.siz.x - hDiff2*2) as u32, &self.text);
+		writeLeftAligned(&mut draw_context.canvas, &draw_context.texture_creator, &draw_context.font, &Color::BLACK, XY {x: self.area.pos.x + hDiff2, y: self.area.pos.y - (theme.window.border.top.inner.width + theme.window.border.top.outer.width) as i32 + (hDiff2 / 2)}, (self.area.siz.x - hDiff2*2) as u32, &self.text);
 	}
 }

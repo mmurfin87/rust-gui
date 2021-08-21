@@ -56,7 +56,7 @@ impl Element for Window
 		canvas.fill_rect(titleRect).expect("title");
 
 		let hDiff: i32 = (theme.window.titleBar.width - theme.window.titleFont.points as u32) as i32;
-		writeLeftAligned(&mut canvas, &draw_context.texture_creator, &draw_context.font, &theme.window.titleFont.color, &XY {x: titleRect.x() + hDiff, y: titleRect.y() + (hDiff / 2)}, (self.area.siz.x - hDiff*2) as u32, self.name);
+		writeLeftAligned(&mut canvas, &draw_context.texture_creator, &draw_context.font, &theme.window.titleFont.color, XY {x: titleRect.x() + hDiff, y: titleRect.y() + (hDiff / 2)}, (self.area.siz.x - hDiff*2) as u32, self.name);
 
 		for e in &mut self.elements
 		{

@@ -11,8 +11,32 @@ pub struct TextInput
 {
 	pub area: RectArea,
 	pub text: String,
-	pub cursorIndex: u32,
+	pub cursorIndex: usize,
 	pub frames: u32
+}
+
+impl TextInput
+{
+	fn shiftCursorLeft(&mut self)
+	{
+		if self.cursorIndex > 0
+		{
+			self.cursorIndex -= 1;
+		}
+	}
+
+	fn shiftCursorRight(&mut self)
+	{
+		if self.cursorIndex < self.text.len()
+		{
+			self.cursorIndex += 1;
+		}
+	}
+
+	fn setCursor(&mut self, x: usize)
+	{
+		self.cursorIndex = if x == 0 { 0 } else if x > self.text.len() { self.text.len() } else { x };
+	}
 }
 
 impl Element for TextInput
@@ -50,13 +74,17 @@ impl Element for TextInput
 						self.cursorIndex = 0;
 						self.text.clear();
 					},
+					Keycode::Left => self.shiftCursorLeft(),
+					Keycode::Right => self.shiftCursorRight(),
+					Keycode::Home => self.setCursor(0),
+					Keycode::End => self.setCursor(self.text.len()),
 					_ => ()
 				}
 			},
 			Event::TextInput { text, .. } =>
 			{
+				self.text = self.text[..self.cursorIndex].to_owned() + text + &self.text[self.cursorIndex..].to_owned();
 				self.cursorIndex += 1;
-				self.text += &text;
 			},
 			_ => ()
 		}
@@ -68,16 +96,16 @@ impl Element for TextInput
 		let hDiff2: i32 = self.area.siz.y - theme.font.points as i32;
 		let borderWidth: u32 = theme.window.titleBorder.top.width + theme.window.titleBorder.bottom.width;
 		let origin: XY = XY {x: self.area.pos.x + hDiff2, y: self.area.pos.y - borderWidth as i32 + (hDiff2 / 2)};
-		let textWidth = if !self.text.is_empty()
+		let maxWidth = (self.area.siz.x - hDiff2*2) as u32;
+		if !self.text.is_empty()
 		{
-			writeLeftAligned(&mut draw_context.canvas, &draw_context.texture_creator, &draw_context.font, &Color::BLACK, &origin, (self.area.siz.x - hDiff2*2) as u32, &self.text)
+			writeLeftAligned(&mut draw_context.canvas, &draw_context.texture_creator, &draw_context.font, &Color::BLACK, origin, maxWidth, &self.text);
 		}
-		else 
-		{ 0 };
 		if self.frames < 21
 		{
+			let textWidth = draw_context.font.size_of(&self.text[..self.cursorIndex]).expect("Text Width");
 			draw_context.canvas.set_draw_color(Color::BLACK);
-			draw_context.canvas.draw_rect(sdl2::rect::Rect::new(origin.x + textWidth as i32, origin.y, 2, self.area.siz.y as u32 - borderWidth)).expect("cursor");
+			draw_context.canvas.draw_rect(sdl2::rect::Rect::new(origin.x + (textWidth.0 as i32).min(maxWidth as i32), origin.y, 2, self.area.siz.y as u32 - borderWidth)).expect("cursor");
 		}
 		else if self.frames > 40
 		{

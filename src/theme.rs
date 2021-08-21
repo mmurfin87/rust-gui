@@ -42,8 +42,16 @@ impl w98Theme3dBox
 		{
 			top: self.bottom,
 			left: self.right,
-			right: self.left,
-			bottom: self.top
+			right: w98Theme3dBoxBorder
+			{
+				inner: self.left.outer,
+				outer: self.left.inner
+			},
+			bottom: w98Theme3dBoxBorder
+			{
+				inner: self.top.outer,
+				outer: self.top.inner
+			}
 		}
 	}
 }
@@ -195,54 +203,32 @@ pub const fn basicClassicW98Theme(fontPath: &'static str, fontPoints: u16, barWi
 	};
 }
 
-pub static CLASSIC_W98_THEME_BAR_WIDTH: u32 = 1;
-pub static CLASSIC_W98_THEME_BASE_BACKGROUND: Color = Color::RGB(0, 127, 127);
-pub static CLASSIC_W98_THEME_WINDOW_BACKGROUND: Color = Color::RGB(191, 191, 191);
-pub static CLASSIC_W98_THEME_TITLE_BACKGROUND: Color = Color::RGB(0, 0, 127);
-pub static CLASSIC_W98_THEME_TITLE_INACTIVE_BACKGROUND: Color = Color::RGB(127, 127, 127);
-pub static CLASSIC_W98_THEME_FONT_PATH: &str = "C:/WINDOWS/FONTS/ARIAL.TTF";
-pub static CLASSIC_W98_THEME_TEXT_COLOR: Color = Color::WHITE;
-pub static CLASSIC_W98_THEME_TEXT_POINTS: u16 = 16;
-pub static CLASSIC_W98_THEME_LIGHT_BORDER: Color = Color::RGB(223, 223, 223);
-pub static CLASSIC_W98_THEME_VERY_LIGHT_BORDER: Color = Color::RGB(255, 255, 255);
-pub static CLASSIC_W98_THEME_DARK_BORDER: Color = Color::RGB(127, 127, 127);
-pub static CLASSIC_W98_THEME_VERY_DARK_BORDER: Color = Color::RGB(0, 0, 0);
 pub static CLASSIC_W98_THEME: w98Theme = basicClassicW98Theme(
-	CLASSIC_W98_THEME_FONT_PATH, 
-	CLASSIC_W98_THEME_TEXT_POINTS,
-	CLASSIC_W98_THEME_BAR_WIDTH,
-	CLASSIC_W98_THEME_BASE_BACKGROUND, 
-	CLASSIC_W98_THEME_WINDOW_BACKGROUND, 
-	CLASSIC_W98_THEME_TITLE_BACKGROUND,
-	CLASSIC_W98_THEME_TITLE_INACTIVE_BACKGROUND,
-	CLASSIC_W98_THEME_TEXT_COLOR,
-	CLASSIC_W98_THEME_LIGHT_BORDER, 
-	CLASSIC_W98_THEME_VERY_LIGHT_BORDER, 
-	CLASSIC_W98_THEME_DARK_BORDER, 
-	CLASSIC_W98_THEME_VERY_DARK_BORDER);
+	"C:/WINDOWS/FONTS/ARIAL.TTF", 			// Font Path
+	16,										// Font Points
+	1,										// Bar width for all [3d]ThemeBar widths
+	Color::RGB(0, 127, 127), 				// Base Background
+	Color::RGB(191, 191, 191), 				// Window Background
+	Color::RGB(0, 0, 127),					// Title Active Background
+	Color::RGB(127, 127, 127),				// Title Inactive Background
+	Color::WHITE,							// Font color
+	Color::RGB(223, 223, 223), 				// 3d Box Light Border
+	Color::RGB(255, 255, 255), 				// 3d Box Very Light Border
+	Color::RGB(127, 127, 127), 				// 3d Box Dark Border
+	Color::RGB(0, 0, 0)						// 3d Box Very Dark Border
+);
 
-pub static MYSTERY_W98_THEME_BAR_WIDTH:u32 = CLASSIC_W98_THEME_BAR_WIDTH;
-pub static MYSTERY_W98_THEME_BASE_BACKGROUND:Color = Color::RGB(0, 127, 127);
-pub static MYSTERY_W98_THEME_WINDOW_BACKGROUND: Color = Color::RGB(103, 120, 104);
-pub static MYSTERY_W98_THEME_TITLE_BACKGROUND: Color = Color::RGB(100, 133, 52);
-pub static MYSTERY_W98_THEME_TITLE_INACTIVE_BACKGROUND: Color = Color::RGB(89, 89, 89);
-pub static MYSTERY_W98_THEME_FONT_PATH: &str = "C:/WINDOWS/FONTS/ARIAL.TTF";
-pub static MYSTERY_W98_THEME_TEXT_COLOR: Color = Color::WHITE;
-pub static MYSTERY_W98_THEME_TEXT_POINTS: u16 = CLASSIC_W98_THEME_TEXT_POINTS;
-pub static MYSTERY_W98_THEME_VERY_LIGHT_BORDER: Color = Color::RGB(152, 166, 153);
-pub static MYSTERY_W98_THEME_LIGHT_BORDER: Color = Color::RGB(102, 116, 103);
-pub static MYSTERY_W98_THEME_DARK_BORDER: Color = Color::RGB(41, 44, 35);
-pub static MYSTERY_W98_THEME_VERY_DARK_BORDER: Color = Color::RGB(0, 0, 0);
 pub static MYSTERY_W98_THEME: w98Theme = basicClassicW98Theme(
-	MYSTERY_W98_THEME_FONT_PATH, 
-	MYSTERY_W98_THEME_TEXT_POINTS,
-	MYSTERY_W98_THEME_BAR_WIDTH,
-	MYSTERY_W98_THEME_BASE_BACKGROUND, 
-	MYSTERY_W98_THEME_WINDOW_BACKGROUND, 
-	MYSTERY_W98_THEME_TITLE_BACKGROUND,
-	MYSTERY_W98_THEME_TITLE_INACTIVE_BACKGROUND,
-	MYSTERY_W98_THEME_TEXT_COLOR,
-	MYSTERY_W98_THEME_LIGHT_BORDER, 
-	MYSTERY_W98_THEME_VERY_LIGHT_BORDER, 
-	MYSTERY_W98_THEME_DARK_BORDER, 
-	MYSTERY_W98_THEME_VERY_DARK_BORDER);
+	CLASSIC_W98_THEME.font.path, 			// Font Path
+	CLASSIC_W98_THEME.font.points,			// Font Points
+	1,										// Bar width for all [3d]ThemeBar widths
+	Color::RGB(0, 127, 127), 				// Base Background
+	Color::RGB(103, 120, 104), 				// Window Background
+	Color::RGB(100, 133, 52),				// Title Active Background
+	Color::RGB(89, 89, 89),					// Title Inactive Background
+	Color::WHITE,							// Font color
+	Color::RGB(152, 166, 153), 				// 3d Box Light Border
+	Color::RGB(152, 166, 153), 				// 3d Box Very Light Border
+	Color::RGB(41, 44, 35), 				// 3d Box Dark Border
+	Color::RGB(0, 0, 0)						// 3d Box Very Dark Border
+);

@@ -100,19 +100,18 @@ impl Element for TextInput
 	fn draw(&mut self, draw_context: &mut DrawContext, theme: &w98Theme)
 	{
 		drawW983dBox(&mut draw_context.canvas, &theme.window.border.invert(), Color::WHITE, &self.area);
-		let hDiff2: i32 = self.area.siz.y - theme.font.points as i32;
-		let borderWidth: u32 = theme.window.titleBorder.top.width + theme.window.titleBorder.bottom.width;
-		let origin: XY = XY {x: self.area.pos.x + hDiff2, y: self.area.pos.y - borderWidth as i32 + (hDiff2 / 2)};
-		let maxWidth = (self.area.siz.x - hDiff2*2) as u32;
+		let innerArea = innerRectArea(&theme.window.border, &self.area);
+		let hDiff2: i32 = innerArea.siz.y - theme.font.points as i32;
+		let maxWidth = (innerArea.siz.x - hDiff2*2) as u32;
 		if !self.text.is_empty()
 		{
-			writeLeftAligned(&mut draw_context.canvas, &draw_context.texture_creator, &draw_context.font, &Color::BLACK, origin, maxWidth, &self.text);
+			writeLeftAligned(&mut draw_context.canvas, &draw_context.texture_creator, &draw_context.font, &Color::BLACK, innerArea.pos.offset(hDiff2, hDiff2/2), maxWidth, &self.text);
 		}
 		if self.frames < 21
 		{
 			let textWidth = draw_context.font.size_of(&self.text[..self.cursorIndex]).expect("Text Width");
 			draw_context.canvas.set_draw_color(Color::BLACK);
-			draw_context.canvas.draw_rect(sdl2::rect::Rect::new(origin.x + (textWidth.0 as i32).min(maxWidth as i32), origin.y, 2, self.area.siz.y as u32 - borderWidth)).expect("cursor");
+			draw_context.canvas.draw_rect(innerArea.adjusted((hDiff2 + textWidth.0 as i32).min(maxWidth as i32), hDiff2 / 2, -(innerArea.siz.x-1), -hDiff2).to_rect()).expect("cursor");
 		}
 		else if self.frames > 40
 		{

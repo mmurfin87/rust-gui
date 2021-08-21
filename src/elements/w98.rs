@@ -6,6 +6,23 @@ use sdl2::render::Canvas;
 use sdl2::ttf::Font;
 use sdl2::render::TextureQuery;
 
+pub fn innerRectArea(theme: &w98Theme3dBox, w: &RectArea) -> RectArea
+{
+	return RectArea
+	{
+		pos: XY
+		{ 
+			x: w.pos.x + theme.left.outer.width as i32 + theme.left.inner.width as i32, 
+			y: w.pos.y + theme.top.outer.width as i32 + theme.top.inner.width as i32
+		},
+		siz: XY 
+		{ 
+			x: w.siz.x - theme.left.outer.width as i32 - theme.left.inner.width as i32 - theme.right.inner.width as i32 - theme.right.outer.width as i32, 
+			y: w.siz.y - theme.top.outer.width as i32 - theme.top.inner.width as i32 - theme.bottom.inner.width as i32 - theme.bottom.outer.width as i32
+		}
+	};
+}
+
 pub fn drawW983dBox<T: sdl2::render::RenderTarget>(canvas: &mut Canvas<T>, theme: &w98Theme3dBox, backgroundColor: Color, w: &RectArea)
 {
 	canvas.set_draw_color(theme.top.outer.color);
@@ -29,12 +46,7 @@ pub fn drawW983dBox<T: sdl2::render::RenderTarget>(canvas: &mut Canvas<T>, theme
 	canvas.fill_rect(Rect::new(w.pos.x + theme.left.outer.width as i32, w.pos.y + w.siz.y - theme.bottom.inner.width as i32 - theme.bottom.outer.width as i32, w.siz.x as u32 - theme.left.outer.width - theme.right.outer.width, theme.bottom.inner.width)).expect("windowBottomInnerBorder");
 
 	canvas.set_draw_color(backgroundColor);
-	canvas.fill_rect(Rect::new(
-		w.pos.x + theme.left.outer.width as i32 + theme.left.inner.width as i32, 
-		w.pos.y + theme.top.outer.width as i32 + theme.top.inner.width as i32, 
-		w.siz.x as u32 - theme.left.outer.width - theme.left.inner.width - theme.right.inner.width - theme.right.outer.width, 
-		w.siz.y as u32 - theme.top.outer.width - theme.top.inner.width - theme.bottom.inner.width - theme.bottom.outer.width))
-		.expect("windowBackground");
+	canvas.fill_rect(innerRectArea(theme, w).to_rect()).expect("windowBackground");
 }
 
 pub fn writeLeftAligned<T: sdl2::render::RenderTarget>(canvas: &mut Canvas<T>, textureCreator: &sdl2::render::TextureCreator<sdl2::video::WindowContext>, font: &Font, color: &Color, origin: XY, maxWidth: u32, text: &str)

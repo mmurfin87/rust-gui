@@ -76,7 +76,7 @@ const fn era(area: &RectArea, theme: &w98Theme, offsetX: i32, offsetY: i32, widt
 		siz: XY
 		{
 			x: theme.font.points as i32 * widthEms,
-			y: (theme.font.points as u32 + theme.window.border.top.outer.width + theme.window.border.top.inner.width + theme.window.border.bottom.inner.width + theme.window.border.bottom.outer.width) as i32
+			y: 4 as i32 + (theme.font.points as u32 + theme.window.border.top.outer.width + theme.window.border.top.inner.width + theme.window.border.bottom.inner.width + theme.window.border.bottom.outer.width) as i32
 		}
 	};
 }

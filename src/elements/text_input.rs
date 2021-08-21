@@ -68,6 +68,13 @@ impl Element for TextInput
 							self.text = self.text[0..self.text.len()-1].to_owned();
 						}
 					},
+					Keycode::Delete =>
+					{
+						if self.cursorIndex < self.text.len()
+						{
+							self.text = self.text[0..self.cursorIndex].to_owned() + &self.text[self.cursorIndex+1..];
+						}
+					}
 					Keycode::Return =>
 					{
 						println!("Text: {}", self.text);

@@ -37,14 +37,34 @@ pub fn drawW983dBox<T: sdl2::render::RenderTarget>(canvas: &mut Canvas<T>, theme
 		.expect("windowBackground");
 }
 
-pub fn writeLeftAligned<T: sdl2::render::RenderTarget>(canvas: &mut Canvas<T>, textureCreator: &sdl2::render::TextureCreator<sdl2::video::WindowContext>, font: &Font, color: &Color, origin: &XY, maxWidth: u32, text: &str) -> u32
+pub fn drawFontToTexture<'tc, T: sdl2::render::RenderTarget>(canvas: &mut Canvas<T>, textureCreator: &'tc sdl2::render::TextureCreator<sdl2::video::WindowContext>, font: &Font, color: &Color, text: &str) -> (sdl2::render::Texture<'tc>, u32, u32)
 {
 	let surface = font.render(text)
 		.blended(*color)
 		.unwrap();
 	let texture = textureCreator.create_texture_from_surface(&surface).unwrap();
 	let TextureQuery { width, height, .. } = texture.query();
+	return (texture, width, height);
+}
+
+pub fn writeLeftAligned<T: sdl2::render::RenderTarget>(canvas: &mut Canvas<T>, textureCreator: &sdl2::render::TextureCreator<sdl2::video::WindowContext>, font: &Font, color: &Color, origin: &XY, maxWidth: u32, text: &str) -> u32
+{
+	/*
+	let surface = font.render(text)
+		.blended(*color)
+		.unwrap();
+	let texture = textureCreator.create_texture_from_surface(&surface).unwrap();
+	let TextureQuery { width, height, .. } = texture.query();
+	*/
+	let (texture, width, height) = drawFontToTexture(canvas, textureCreator, font, color, text);
 	let skip: u32 = if width > maxWidth { width - maxWidth } else { 0 };
 	canvas.copy(&texture, Some(Rect::new(skip as i32, 0, width - skip, height)), Some(Rect::new(origin.x, origin.y, width - skip, height))).expect("writeLeftAligned");
+	return width - skip;
+}
+
+pub fn drawLeftAligned<T: sdl2::render::RenderTarget>(canvas: &mut Canvas<T>, textureCreator: &sdl2::render::TextureCreator<sdl2::video::WindowContext>, texture: sdl2::render::Texture, width: u32, height: u32, origin: &XY, maxWidth: u32, text: &str) -> u32
+{
+	let skip: u32 = if width > maxWidth { width - maxWidth } else { 0 };
+	canvas.copy(&texture, Some(Rect::new(skip as i32, 0, width - skip, height)), Some(Rect::new(origin.x, origin.y, width - skip, height))).expect("drawLeftAligned");
 	return width - skip;
 }

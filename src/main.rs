@@ -39,9 +39,9 @@ fn main() {
 	let w1ra = RectArea { pos: XY {x: 50, y: 50}, siz: XY {x: 480, y: 320}};
 	let w1tira = era(&w1ra, &windowManager.theme, 10, 30, 20);
 	let w1bra = era(&w1ra, &windowManager.theme, 10, 60, 7);
-	windowManager.windows.push(Window{name: "Window 1", area: w1ra, focus: true, elements: vec![Box::new(TextInput { area: w1tira, text: "".to_owned(), cursorIndex: 0, frames: 0 }), Box::new(Button { area: w1bra, text: "Submit".to_owned(), pressed: false})]});
-	windowManager.windows.push(Window{name: "Window 2", area: RectArea { pos: XY {x: 550, y: 25}, siz: XY {x: 200, y: 200}}, focus: false, elements: std::vec::Vec::new()});
-	windowManager.windows.push(Window{name: "Window 3", area: RectArea { pos: XY {x: 550, y: 250}, siz: XY {x: 200, y: 325}}, focus: false, elements: std::vec::Vec::new()});
+	windowManager.windows.push(Window{name: "Window 1", area: w1ra, focus: true, focusedElement: -1, elements: vec![Box::new(TextInput { area: w1tira, text: "".to_owned(), cursorIndex: 0, frames: 0 }), Box::new(Button { area: w1bra, text: "Submit".to_owned(), pressed: false,})]});
+	windowManager.windows.push(Window{name: "Window 2", area: RectArea { pos: XY {x: 550, y: 25}, siz: XY {x: 200, y: 200}}, focus: false, focusedElement: -1, elements: std::vec::Vec::new()});
+	windowManager.windows.push(Window{name: "Window 3", area: RectArea { pos: XY {x: 550, y: 250}, siz: XY {x: 200, y: 325}}, focus: false, focusedElement: -1, elements: std::vec::Vec::new()});
 
 	let mut event_pump = sdl_context.event_pump().unwrap();
 	video_subsystem.text_input().start();

@@ -6,12 +6,14 @@ use super::super::rectarea::*;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::event::Event;
+use sdl2::mouse::MouseButton;
 
 pub struct Window
 {
 	pub name: &'static str,
 	pub area: RectArea,
 	pub focus: bool,
+	pub focusedElement: i32,
 	pub elements: std::vec::Vec<Box<dyn super::Element>>
 }
 
@@ -35,10 +37,36 @@ impl Element for Window
 
 	fn handleInput(&mut self, event: &Event)
 	{
-		for e in &mut self.elements
+		match *event
 		{
-			e.handleInput(&event);
+			Event::MouseButtonDown { mouse_btn: MouseButton::Left, x, y, .. } =>
+			{
+				let mra = RectArea { pos: XY { x, y }, siz: XY { x: 1, y: 1 }};
+				let mut found = false;
+				for ei in 0..self.elements.len()
+				{
+					if self.elements[ei].intersection(mra)
+					{
+						self.focusedElement = ei as i32;
+						found = true;
+					}
+				}
+				if !found
+				{
+					self.focusedElement = -1;
+				}
+			},
+			_ => ()
 		}
+
+		if self.focusedElement >= 0
+		{
+			self.elements[self.focusedElement as usize].handleInput(event);
+		}
+		//for e in &mut self.elements
+		//{
+		//	e.handleInput(&event);
+		//}
 	}
 
 	fn draw(&mut self, draw_context: &mut DrawContext, theme: &w98Theme)

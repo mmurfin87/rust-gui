@@ -1,10 +1,7 @@
 use super::Element;
-use super::w98::*;
 use super::DrawContext;
 use super::super::theme::*;
 use super::super::rectarea::*;
-use sdl2::pixels::Color;
-use sdl2::rect::Rect;
 use sdl2::event::Event;
 use sdl2::mouse::MouseButton;
 
@@ -97,6 +94,7 @@ impl Element for Window
 						self.focusedElement = ei as i32;
 						found = true;
 						self.elements[ei].element.target(true);
+						println!("Targeted element at {:?}", self.elements[ei].area.adjusted(self.titleArea.x, self.titleArea.y + self.titelArea.h as i32, 0, 0));
 					}
 				}
 				if !found

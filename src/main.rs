@@ -35,7 +35,7 @@ fn main() {
 	
 	let mut windowManager = WindowManager::new(DrawContext::new(canvas, font));
 	
-	let elementSpacing = windowManager.theme.font.points as u32 + 4;
+	let elementSpacing = theme.font.points as u32 + 4;
 	let verticalBorderSize = windowManager.verticalBorderSize();
 	let em1 = windowManager.emCoord(1);
 	let em20 = windowManager.emCoord(20);

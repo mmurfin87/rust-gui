@@ -9,14 +9,20 @@ use sdl2::event::Event;
 
 pub struct TextInput
 {
-	pub area: RectArea,
-	pub text: String,
-	pub cursorIndex: usize,
-	pub frames: u32
+	area: RectArea,
+	text: String,
+	cursorIndex: usize,
+	frames: u32,
+	targeted: bool
 }
 
 impl TextInput
 {
+	pub fn new() -> Self
+	{
+		return TextInput { area: ORIGIN_ZERO, text: String::new(), cursorIndex: 0, frames: 0, targeted: false };
+	}
+
 	fn shiftCursorLeft(&mut self)
 	{
 		if self.cursorIndex > 0
@@ -41,15 +47,14 @@ impl TextInput
 
 impl Element for TextInput
 {
-	fn intersection(&self, ra: RectArea) -> bool
+	fn position(&mut self, area: &RectArea)
 	{
-		return self.area.intersects(ra);
+		self.area = area.clone();
 	}
 
-	fn offsetPosition(&mut self, offset: XY)
+	fn target(&mut self, on: bool)
 	{
-		self.area.pos.x += offset.x;
-		self.area.pos.y += offset.y;
+		self.targeted = on;
 	}
 
 	fn handleInput(&mut self, event: &Event)
@@ -101,19 +106,19 @@ impl Element for TextInput
 	{
 		drawW983dBox(&mut draw_context.canvas, &theme.window.border.invert(), Color::WHITE, &self.area);
 		let innerArea = innerRectArea(&theme.window.border, &self.area);
-		let hDiff2: i32 = innerArea.siz.y - theme.font.points as i32;
-		let maxWidth = (innerArea.siz.x - hDiff2*2) as u32;
+		let hDiff2: u32 = innerArea.h - theme.font.points as u32;
+		let maxWidth = (innerArea.w - hDiff2*2) as u32;
 		if !self.text.is_empty()
 		{
-			writeLeftAligned(&mut draw_context.canvas, &draw_context.texture_creator, &draw_context.font, &Color::BLACK, innerArea.pos.offset(hDiff2, hDiff2/2), maxWidth, &self.text);
+			writeLeftAligned(&mut draw_context.canvas, &draw_context.texture_creator, &draw_context.font, &Color::BLACK, XY { x: innerArea.x, y: innerArea.y}.offset(hDiff2 as i32, hDiff2 as i32 / 2), maxWidth, &self.text);
 		}
-		if self.frames < 21
+		if self.targeted && self.frames < 21
 		{
 			let textWidth = draw_context.font.size_of(&self.text[..self.cursorIndex]).expect("Text Width");
 			draw_context.canvas.set_draw_color(Color::BLACK);
-			draw_context.canvas.draw_rect(innerArea.adjusted((hDiff2 + textWidth.0 as i32).min(maxWidth as i32), hDiff2 / 2, -(innerArea.siz.x-1), -hDiff2).to_rect()).expect("cursor");
+			draw_context.canvas.draw_rect(innerArea.adjusted((hDiff2 + textWidth.0).min(maxWidth) as i32, hDiff2 as i32 / 2, -(innerArea.w as i32 - 1), -(hDiff2 as i32)).to_rect()).expect("cursor");
 		}
-		else if self.frames > 40
+		else if self.targeted && self.frames > 40
 		{
 			self.frames = 0;
 		}

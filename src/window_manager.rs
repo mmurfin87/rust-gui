@@ -5,39 +5,48 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::mouse::MouseButton;
 
-const fn titleBarCollision(x: i32, y: i32, titleBar: &RectArea) -> bool
-{
-	return x >= titleBar.pos.x && x <= titleBar.pos.x + titleBar.siz.x && y >= titleBar.pos.y && y <= titleBar.pos.y + titleBar.siz.y;
-}
-
-const fn titleRectArea(w: &RectArea, theme: &w98Theme) -> RectArea
-{
-	return RectArea
-	{
-		pos: XY
-		{
-			x: w.pos.x + theme.window.border.left.outer.width as i32 + theme.window.border.left.inner.width as i32 + theme.window.titleBorder.left.width as i32, 
-			y: w.pos.y + theme.window.border.top.outer.width as i32 + theme.window.border.top.inner.width as i32 + theme.window.titleBorder.top.width as i32
-		}, 
-		siz: XY
-		{
-			x: w.siz.x - theme.window.border.left.outer.width as i32 - theme.window.border.left.inner.width as i32 - theme.window.border.right.inner.width as i32 - theme.window.border.right.outer.width as i32 - theme.window.titleBorder.left.width as i32 - theme.window.titleBorder.right.width as i32, 
-			y: theme.window.titleBar.width as i32
-		}
-	};
-}
-
-pub struct WindowManager
+pub struct WindowManager<'wm>
 {
 	pub quit: bool,
-	pub windows: std::vec::Vec<Window>,
-	pub theme: &'static w98Theme,
-	pub useClassicTheme: bool,
-	pub capturedWindow: bool
+	pub theme: &'wm w98Theme,
+	draw_context: DrawContext<'wm>,
+	windows: std::vec::Vec<Window>,
+	useClassicTheme: bool,
+	capturedWindow: bool
 }
 
-impl WindowManager
+impl<'wm> WindowManager<'wm>
 {
+	pub fn new(draw_context: DrawContext<'wm>) -> Self
+	{
+		WindowManager { quit: false, draw_context, windows: std::vec::Vec::new(), theme: &CLASSIC_W98_THEME, useClassicTheme: true, capturedWindow: false}
+	}
+
+	pub fn addWindow(&mut self, mut window: Window, area: RectArea) -> &mut Window
+	{
+		window.position(&area);
+		window.titleArea = titleRectArea(&area, self.theme);
+		self.windows.push(window);
+		self.windows.last_mut().unwrap()
+	}
+
+	pub fn emCoord(&self, em: u16) -> u32
+	{
+		//(self.theme.font.points * em) as u32
+		self.draw_context.emCoord(em)
+	}
+
+	pub fn textWidth(&self, text: &String, lPadEms: u16, rPadEms: u16) -> u32
+	{
+		//return self.emCoord(lPadEms) + self.draw_context.font.size_of(text).expect("textWidth").0 + self.emCoord(rPadEms);
+		self.draw_context.textWidth(text, lPadEms, rPadEms)
+	}
+
+	pub fn verticalBorderSize(&self) -> u32
+	{
+		self.theme.window.border.top.outer.width + self.theme.window.border.top.inner.width + self.theme.window.border.bottom.inner.width + self.theme.window.border.bottom.outer.width
+	}
+
 	pub fn handleInput(&mut self, event: &Event)
 	{
 		match *event
@@ -50,25 +59,39 @@ impl WindowManager
 				{
 					MouseButton::Left => 
 					{
-						let mra = RectArea { pos: XY { x, y }, siz: XY { x: 1, y: 1 }};
+						let mra = RectArea::new(x, y, 1, 1);
+						let mut activatedWindow = false;
 						for wi in 0..self.windows.len()
 						{
 							if self.windows[wi].area.intersects(mra)
 							{
+								activatedWindow = true;
 								if wi > 0
 								{
 									self.windows.swap(0, wi);
-									self.windows[0].focus = true;
 									self.windows[wi].focus = false;
+									self.windows[wi].target(false);
+									self.windows[0].focus = true;
+									self.windows[0].target(true);
+								}
+								else if !self.windows[0].focus
+								{
+									self.windows[0].focus = true;
+									self.windows[0].target(true);
 								}
 								
-								let titlera = titleRectArea(&self.windows[0].area, &self.theme);
-								if titleBarCollision(x, y, &titlera)
+								//let titlera = titleRectArea(&self.windows[0].area, &self.theme);
+								if self.windows[0].titleArea.intersects(mra)//titleBarCollision(x, y, &titlera)
 								{
 									self.capturedWindow = true;
 									break;
 								}
 							}
+						}
+						if !activatedWindow
+						{
+							self.windows[0].target(false);
+							self.windows[0].focus = false;
 						}
 						logButtonDown("Left")
 					},
@@ -96,7 +119,9 @@ impl WindowManager
 
 				if self.capturedWindow
 				{
-					self.windows[0].offsetPosition(XY { x: xrel, y: yrel });
+					let newPosition = self.windows[0].area.adjusted(xrel, yrel, 0, 0);
+					self.windows[0].position(&newPosition);
+					//self.windows[0].area = self.windows[0].area.adjusted(xrel, yrel, 0, 0);
 				}
 			},
 			_ => {}
@@ -108,16 +133,26 @@ impl WindowManager
 		}
 	}
 
-	pub fn draw(&mut self, mut draw_context: &mut DrawContext)
+	pub fn draw(&mut self)
 	{
-		draw_context.canvas.set_draw_color(self.theme.backgroundColor);
-		draw_context.canvas.clear();
+		self.draw_context.canvas.set_draw_color(self.theme.backgroundColor);
+		self.draw_context.canvas.clear();
 
 		for wi in (0..self.windows.len()).rev()
 		{
-			self.windows[wi].draw(&mut draw_context, &self.theme);
+			self.windows[wi].draw(&mut self.draw_context, &self.theme);
 		}
 
-		draw_context.canvas.present();
+		self.draw_context.canvas.present();
 	}
+}
+fn titleRectArea(w: &RectArea, theme: &w98Theme) -> RectArea
+{
+	return RectArea
+	{
+		x: w.x + (theme.window.border.left.outer.width + theme.window.border.left.inner.width + theme.window.titleBorder.left.width) as i32,
+		y: w.y + (theme.window.border.top.outer.width + theme.window.border.top.inner.width + theme.window.titleBorder.top.width) as i32,
+		w: w.w - theme.window.border.left.outer.width - theme.window.border.left.inner.width - theme.window.border.right.inner.width - theme.window.border.right.outer.width - theme.window.titleBorder.left.width - theme.window.titleBorder.right.width, 
+		h: theme.window.titleBar.width
+	};
 }

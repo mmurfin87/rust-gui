@@ -9,22 +9,30 @@ use sdl2::event::Event;
 
 pub struct Button
 {
-	pub area: RectArea,
-	pub text: String,
-	pub pressed: bool
+	area: RectArea,
+	text: String,
+	targeted: bool,
+	pressed: bool
+}
+
+impl Button
+{
+	pub fn new(text: String) -> Self
+	{
+		return Button { area: ORIGIN_ZERO, text, targeted: false, pressed: false };
+	}
 }
 
 impl Element for Button
 {
-	fn intersection(&self, ra: RectArea) -> bool
+	fn position(&mut self, area: &RectArea)
 	{
-		return self.area.intersects(ra);
+		self.area = area.clone();
 	}
 
-	fn offsetPosition(&mut self, offset: XY)
+	fn target(&mut self, on: bool)
 	{
-		self.area.pos.x += offset.x;
-		self.area.pos.y += offset.y;
+		self.targeted = on;
 	}
 
 	fn handleInput(&mut self, event: &Event)
@@ -33,7 +41,7 @@ impl Element for Button
 		{
 			Event::MouseButtonDown { mouse_btn: MouseButton::Left, x, y, .. } => 
 			{
-				if self.intersection(RectArea { pos: XY { x: x, y: y }, siz: XY { x: 1, y: 1}})
+				if self.area.intersects2(x, y, 1, 1)
 				{
 					self.pressed = true
 				}
@@ -57,7 +65,7 @@ impl Element for Button
 		{
 			drawW983dBox(&mut draw_context.canvas, &theme.window.border, theme.window.backgroundColor, &self.area);
 		}
-		let hDiff2: i32 = self.area.siz.y - theme.font.points as i32;
-		writeLeftAligned(&mut draw_context.canvas, &draw_context.texture_creator, &draw_context.font, &Color::BLACK, XY {x: self.area.pos.x + hDiff2, y: self.area.pos.y - (theme.window.border.top.inner.width + theme.window.border.top.outer.width) as i32 + (hDiff2 / 2)}, (self.area.siz.x - hDiff2*2) as u32, &self.text);
+		let hDiff2: i32 = self.area.h as i32 - theme.font.points as i32;
+		writeLeftAligned(&mut draw_context.canvas, &draw_context.texture_creator, &draw_context.font, &Color::BLACK, XY {x: self.area.x + hDiff2, y: self.area.y - (theme.window.border.top.inner.width + theme.window.border.top.outer.width) as i32 + (hDiff2 / 2)}, self.area.w - hDiff2 as u32*2, &self.text);
 	}
 }

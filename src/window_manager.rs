@@ -1,6 +1,8 @@
 use super::rectarea::*;
 use super::theme::*;
 use super::elements::*;
+use sdl2::pixels::Color;
+use sdl2::rect::Rect;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::mouse::MouseButton;
@@ -138,6 +140,19 @@ impl<'wm> WindowManager<'wm>
 
 		for wi in (0..self.windows.len()).rev()
 		{
+			// This is just to help visually identify window-drawing bugs. Red should not be visible
+			self.draw_context.canvas.set_draw_color(Color::RED);
+			self.draw_context.canvas.fill_rect(Rect::new(self.windows[wi].area.x, self.windows[wi].area.y, self.windows[wi].area.w, self.windows[wi].area.h)).expect("windowBackground");
+	
+			drawW983dBox(&mut self.draw_context.canvas, &self.theme.window.border, self.theme.window.backgroundColor, &self.windows[wi].area);
+
+			self.draw_context.canvas.set_draw_color(if self.windows[wi].focus { self.theme.window.titleBar.color } else { self.theme.window.titleBar.inactiveColor });
+			let titleRect = Rect::new(self.windows[wi].area.x + self.theme.window.border.left.outer.width as i32 + self.theme.window.border.left.inner.width as i32 + self.theme.window.titleBorder.left.width as i32, (self.windows[wi].area.y as u32 + self.theme.window.border.top.outer.width + self.theme.window.border.top.inner.width + self.theme.window.titleBorder.top.width) as i32, self.windows[wi].area.w as u32 - self.theme.window.border.left.outer.width - self.theme.window.border.left.inner.width - self.theme.window.border.right.inner.width - self.theme.window.border.right.outer.width - self.theme.window.titleBorder.left.width - self.theme.window.titleBorder.right.width, self.theme.window.titleBar.width);
+			self.draw_context.canvas.fill_rect(titleRect).expect("title");
+
+			let hDiff: u32 = self.theme.window.titleBar.width - self.theme.window.titleFont.points as u32;
+			writeLeftAligned(&mut self.draw_context.canvas, &self.draw_context.texture_creator, &self.draw_context.font, &self.theme.window.titleFont.color, XY {x: titleRect.x() + hDiff as i32, y: titleRect.y() + (hDiff as i32 / 2)}, self.windows[wi].area.w - hDiff*2, self.windows[wi].name);
+
 			self.windows[wi].draw(&mut self.draw_context, &self.theme);
 		}
 

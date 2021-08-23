@@ -119,21 +119,6 @@ impl Element for Window
 
 	fn draw(&mut self, draw_context: &mut DrawContext, theme: &w98Theme)
 	{
-		let mut canvas = &mut draw_context.canvas;
-
-		// This is just to help visually identify window-drawing bugs. Red should not be visible
-		canvas.set_draw_color(Color::RED);
-		canvas.fill_rect(Rect::new(self.area.x, self.area.y, self.area.w, self.area.h)).expect("windowBackground");
-	
-		drawW983dBox(&mut canvas, &theme.window.border, theme.window.backgroundColor, &self.area);
-
-		canvas.set_draw_color(if self.focus { theme.window.titleBar.color } else { theme.window.titleBar.inactiveColor });
-		let titleRect = Rect::new(self.area.x + theme.window.border.left.outer.width as i32 + theme.window.border.left.inner.width as i32 + theme.window.titleBorder.left.width as i32, (self.area.y as u32 + theme.window.border.top.outer.width + theme.window.border.top.inner.width + theme.window.titleBorder.top.width) as i32, self.area.w as u32 - theme.window.border.left.outer.width - theme.window.border.left.inner.width - theme.window.border.right.inner.width - theme.window.border.right.outer.width - theme.window.titleBorder.left.width - theme.window.titleBorder.right.width, theme.window.titleBar.width);
-		canvas.fill_rect(titleRect).expect("title");
-
-		let hDiff: u32 = theme.window.titleBar.width - theme.window.titleFont.points as u32;
-		writeLeftAligned(&mut canvas, &draw_context.texture_creator, &draw_context.font, &theme.window.titleFont.color, XY {x: titleRect.x() + hDiff as i32, y: titleRect.y() + (hDiff as i32 / 2)}, self.area.w - hDiff*2, self.name);
-
 		for e in &mut self.elements
 		{
 			e.element.draw(draw_context, theme);

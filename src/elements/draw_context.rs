@@ -27,8 +27,8 @@ impl<'ttf_context> DrawContext<'ttf_context>
 		self.lineSpacing * em as u32
 	}
 
-	pub fn textWidth(&self, text: &String, lPadEms: u16, rPadEms: u16) -> u32
+	pub fn textWidth(&self, text: &str, extraEms: u16) -> u32
 	{
-		self.lineSpacing * lPadEms as u32 + self.font.size_of(text).expect("textWidth").0 + self.lineSpacing * rPadEms as u32
+		self.font.size_of(text).expect("textWidth").0 + self.lineSpacing * extraEms as u32
 	}
 }

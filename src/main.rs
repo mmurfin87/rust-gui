@@ -39,9 +39,10 @@ fn main() {
 	let verticalBorderSize = windowManager.verticalBorderSize();
 	let em1 = windowManager.emCoord(1);
 	let em20 = windowManager.emCoord(20);
+	let submitTextWidth = windowManager.strWidth("Submit", 1);
 	windowManager.addWindow(Window::new("Window 1", elementSpacing), RectArea::new(50, 50, 480, 320))
 		.addElement(em20, 4 + em1 + verticalBorderSize, Box::new(TextInput::new()))
-		.addElement(em20, 4 + em1 + verticalBorderSize, Box::new(Button::new(String::from("Submit"))));
+		.addElement(submitTextWidth, 4 + em1 + verticalBorderSize, Box::new(Button::new(String::from("Submit"))));
 	windowManager.addWindow(Window::new("Window 2", elementSpacing), RectArea::new(550, 25, 200, 200));
 	windowManager.addWindow(Window::new("Window 3", elementSpacing), RectArea::new(550, 250, 200, 325));
 

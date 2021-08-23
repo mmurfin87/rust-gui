@@ -37,9 +37,9 @@ impl<'wm> WindowManager<'wm>
 		self.draw_context.emCoord(em)
 	}
 
-	pub fn textWidth(&self, text: &String, lPadEms: u16, rPadEms: u16) -> u32
+	pub fn strWidth(&self, text: &str, extraEms: u16) -> u32
 	{
-		self.draw_context.textWidth(text, lPadEms, rPadEms)
+		self.draw_context.textWidth(text, extraEms)
 	}
 
 	pub fn verticalBorderSize(&self) -> u32

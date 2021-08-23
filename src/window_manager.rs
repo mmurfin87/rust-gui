@@ -8,7 +8,7 @@ use sdl2::mouse::MouseButton;
 pub struct WindowManager<'wm>
 {
 	pub quit: bool,
-	pub theme: &'wm w98Theme,
+	theme: &'wm w98Theme,
 	draw_context: DrawContext<'wm>,
 	windows: std::vec::Vec<Window>,
 	useClassicTheme: bool,
@@ -32,13 +32,11 @@ impl<'wm> WindowManager<'wm>
 
 	pub fn emCoord(&self, em: u16) -> u32
 	{
-		//(self.theme.font.points * em) as u32
 		self.draw_context.emCoord(em)
 	}
 
 	pub fn textWidth(&self, text: &String, lPadEms: u16, rPadEms: u16) -> u32
 	{
-		//return self.emCoord(lPadEms) + self.draw_context.font.size_of(text).expect("textWidth").0 + self.emCoord(rPadEms);
 		self.draw_context.textWidth(text, lPadEms, rPadEms)
 	}
 

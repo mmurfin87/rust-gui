@@ -71,9 +71,6 @@ impl Element for Window
 		for e in &mut self.elements
 		{
 			e.element.position(&e.area.adjusted(self.titleArea.x, self.titleArea.y + self.titleArea.h as i32, 0, 0));
-			//let pos = self.elementAbsolutePosition(&e.area);
-			//e.element.position(&pos);
-			//Window::repositionElement(&self.titleArea, e);//e.element.position(&e.area.adjusted(self.titleArea.x, self.titleArea.y + self.titleArea.h as i32, 0, 0));
 		}
 	}
 

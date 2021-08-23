@@ -42,15 +42,17 @@ fn main() {
 	let em20 = windowManager.emCoord(20);
 	let submitTextWidth = windowManager.strWidth("Submit", 1);
 	windowManager.addWindow(Window::new("Window 1", elementSpacing), RectArea::new(50, 50, 480, 320))
-		.addElement(em20, 4 + em1, Box::new(Label::new(String::from("TextInput Test:"))))
-		.addElement(em20, 4 + em1 + verticalBorderSize, Box::new(TextInput::new()))
-		.addElement(submitTextWidth, 4 + em1 + verticalBorderSize, Box::new(Button::new(String::from("Submit"))));
-	windowManager.addWindow(Window::new("Window 2", 4), RectArea::new(550, 25, 200, 200))
-		.addElement(em8, 4 + em1, Box::new(Label::new(String::from("Given Name"))))
-		.addElement(em8, 4 + em1 + verticalBorderSize, Box::new(TextInput::new()))
-		.addElement(em8, 4 + em1, Box::new(Label::new(String::from("Surname"))))
-		.addElement(em8, 4 + em1 + verticalBorderSize, Box::new(TextInput::new()))
-		.addElement(submitTextWidth, 4 + em1 + verticalBorderSize, Box::new(Button::new(String::from("Submit"))));
+		.addElementSized(em20, 4 + em1, Box::new(Label::new(String::from("TextInput Test:"))))
+		.addElementSized(em20, 4 + em1 + verticalBorderSize, Box::new(TextInput::new()))
+		.addElementSized(submitTextWidth, 4 + em1 + verticalBorderSize, Box::new(Button::new(String::from("Submit"))));
+	windowManager.addWindow(Window::new("Window 2", 2), RectArea::new(550, 25, 200, 200))
+		.addElementSized(em8, 4 + em1, Box::new(Label::new(String::from("Given Name"))))
+		.addElementSized(em8, 4 + em1 + verticalBorderSize, Box::new(TextInput::new()))
+		.addElementSized(em8, 4 + em1, Box::new(Label::new(String::new())))
+		.addElementSized(em8, 4 + em1, Box::new(Label::new(String::from("Surname"))))
+		.addElementSized(em8, 4 + em1 + verticalBorderSize, Box::new(TextInput::new()))
+		.addElementSized(em8, 4 + em1, Box::new(Label::new(String::new())))
+		.addElementSized(submitTextWidth, 4 + em1 + verticalBorderSize, Box::new(Button::new(String::from("Submit"))));
 	windowManager.addWindow(Window::new("Window 3", elementSpacing), RectArea::new(550, 250, 200, 325));
 
 	let mut event_pump = sdl_context.event_pump().unwrap();

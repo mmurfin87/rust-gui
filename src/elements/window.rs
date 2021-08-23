@@ -1,5 +1,7 @@
 use super::Element;
 use super::DrawContext;
+use sdl2::pixels::Color;
+use sdl2::rect::Rect;
 use super::super::theme::*;
 use super::super::rectarea::*;
 use sdl2::event::Event;
@@ -32,11 +34,16 @@ impl Window
 		};
 	}
 
-	pub fn addElement(&mut self, width: u32, height: u32, element: Box<dyn Element>) -> &mut Window
+	pub fn addElementSized(&mut self, width: u32, height: u32, element: Box<dyn Element>) -> &mut Window
 	{
 		let yOffset: i32 = self.elements.last().map(|e| e.area.y + e.area.h as i32).unwrap_or(0);
 		let area = RectArea::new(self.spacing as i32, yOffset + self.spacing as i32, width, height);
 		println!("Added Element with yOffset {} at {:?}", yOffset, area);
+		self.addElement(area, element)
+	}
+
+	pub fn addElement(&mut self, area: RectArea, element: Box<dyn Element>) -> &mut Window
+	{
 		let mut data = ElementData{ area, element};
 		data.element.position(&area.adjusted(self.titleArea.x, self.titleArea.y + self.titleArea.h as i32, 0, 0));
 		self.elements.push(data);
@@ -94,7 +101,7 @@ impl Element for Window
 						self.focusedElement = ei as i32;
 						found = true;
 						self.elements[ei].element.target(true);
-						println!("Targeted element at {:?}", self.elements[ei].area.adjusted(self.titleArea.x, self.titleArea.y + self.titelArea.h as i32, 0, 0));
+						println!("Targeted element at {:?}", self.elements[ei].area.adjusted(self.titleArea.x, self.titleArea.y + self.titleArea.h as i32, 0, 0));
 					}
 				}
 				if !found
@@ -119,6 +126,10 @@ impl Element for Window
 	{
 		for e in &mut self.elements
 		{
+			// This is just to help visually identify window-drawing bugs. Red should not be visible
+			//draw_context.canvas.set_draw_color(Color::RED);
+			//draw_context.canvas.fill_rect(Rect::new(self.titleArea.x + e.area.x, self.titleArea.y + self.titleArea.h as i32 + e.area.y, e.area.w, e.area.h)).expect("Element Debug Background");
+
 			e.element.draw(draw_context, theme);
 		}
 	}
